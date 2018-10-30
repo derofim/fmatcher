@@ -59,6 +59,13 @@ std::regex convert_regex(const std::string& real_pattern)
     return std::regex(regex_pattern);
 }
 
+
+bool is_valid_filename(const std::string& filename)
+{
+    // Prohibited filenames that contain one of (with space): *, ?
+    return std::string::npos == filename.find_first_of(R"RAW(*, ?)RAW");
+}
+
 int main(int argc, char const * const * argv)
 {
     std::string filename, pattern;
@@ -77,11 +84,14 @@ int main(int argc, char const * const * argv)
         exit(2);
     }
 
-/*Prohibited filenames that contain one of (with space):
-*, ?*/
+    if(!is_valid_filename(filename)) {
+        std::cerr << "invalid filename " << filename << std::endl;
+        exit(1);
+    }
 
     // Simple regular expression matching
-    std::string fnames[] = {filename};
+    std::string fnames[] = {to_forward_slashes(filename)};
+    std::cout << "filename " << to_forward_slashes(filename) << std::endl;
  
     for (const auto &fname : fnames) {
         std::cout << fname << ": " << std::regex_match(fname, convert_regex(pattern)) << '\n';
