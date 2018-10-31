@@ -68,3 +68,16 @@ Prohibited filenames that contain one of (with space):
 ## dependencies
 
 * Clara - A simple to use, composable, command line parser for C++ 11 and beyond
+
+## Help
+
+```
+./fmatcher -h
+usage:
+  fmatcher  options
+
+where options are:
+  -f, --filename <filename>    What is file name?
+  -p, --pattern <pattern>      What is pattern?
+  -?, -h, --help               display usage information
+```

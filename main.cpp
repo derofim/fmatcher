@@ -3,9 +3,11 @@
 #include <regex>
 #include <functional>
 
-#include "clara.hpp"
+/*#include "clara.hpp"
 
-using namespace clara;
+using namespace clara;*/
+
+#include "argparse.hpp"
 
 std::string to_forward_slashes(const std::string& str)
 {
@@ -68,21 +70,79 @@ bool is_valid_filename(const std::string& filename)
 
 int main(int argc, char const * const * argv)
 {
+    using namespace argparse;
+
     std::string filename, pattern;
+    bool showhelp = false;
+
+     auto cli
+        = Opt(filename, "filename")
+            ["-f"]["--filename"]
+          | Opt(pattern, "pattern")
+            ["-p"]["--pattern"]
+          //| Help(showhelp);
+          | Opt(showhelp, "help")
+            ["-h"]["--help"]
+            //.optional()
+            //.flag()
+            ;
+    // TODO: refactor
+    // TODO: TEST
+    // TODO: isFlag
+    // TODO: CustomCeck labmda https://mariusbancila.ro/blog/2018/04/03/parsing-command-line-arguments-in-cpp-with-clara/
+    // TODO: required
+    // TODO: stream
+    // TODO: exact policy: no extra args
+    // TODO: noopt policy: get args by pos
+    // LIKE: ./fmatcher -f "pattern1\/28" rawarg0 -p "pattern*\/28" -h -flag rawarg1 rawarg2 -longstr Your long text --double
+    // TODO: copy &
+    // TODO: pass by const ref
+    cli.parse( Args( argc, argv ) );
+    std::cout << "filename " << filename << std::endl;
+    std::cout << "pattern " << pattern << std::endl;
+    std::cout << "showhelp " << std::to_string(showhelp) << std::endl;
+    //cli.debugprint();
+
+    /*
 
     auto cli
         = Opt( filename, "filename" )
             ["-f"]["--filename"]
             ("What is file name?")
+            .require()
         | Opt( pattern, "pattern" )
             ["-p"]["--pattern"]
-            ("What is pattern?");
+            ("What is pattern?")
+            .require()
+         | Help(showhelp);*/
+
+    /*auto cli
+        = Opt( filename, "filename" )
+            ["-f"]["--filename"]
+            ("What is file name?")
+            .required()
+        | Opt( pattern, "pattern" )
+            ["-p"]["--pattern"]
+            ("What is pattern?")
+            .required()
+         | Help(showhelp);
 
     auto result = cli.parse( Args( argc, argv ) );
     if(!result) {
         std::cerr << "Error in command line: " << result.errorMessage() << std::endl;
         exit(2);
     }
+
+    if (result.value().type() != ParseResultType::Matched) {
+        std::cerr << "Error in command line: not enough arguments" << std::endl;
+        exit(2);
+    }
+
+    if (showhelp)
+    {
+        cli.writeToStream(std::cout);
+        exit(2);
+    }*/
 
     if(!is_valid_filename(filename)) {
         std::cerr << "invalid filename " << filename << std::endl;
