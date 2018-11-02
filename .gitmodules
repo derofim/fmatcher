@@ -1,3 +1,0 @@
-[submodule "thirdparty/Clara"]
-	path = thirdparty/Clara
-	url = https://github.com/catchorg/Clara.git
