@@ -97,6 +97,7 @@ int main(int argc, char const * const * argv)
     // LIKE: ./fmatcher -f "pattern1\/28" rawarg0 -p "pattern*\/28" -h -flag rawarg1 rawarg2 -longstr Your long text --double
     // TODO: copy &
     // TODO: pass by const ref
+    // TODO: header only
     cli.parse( Args( argc, argv ) );
     std::cout << "filename " << filename << std::endl;
     std::cout << "pattern " << pattern << std::endl;

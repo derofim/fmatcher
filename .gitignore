@@ -101,6 +101,7 @@
 # Ignore build artifacts
 bin
 build
+out
 
 # Exceptions
 /*.sln
@@ -109,6 +110,9 @@ build
 /CMakeLists.txt
 *.target.xml
 *.exe.config
+
+# Test results
+Testing/
 
 # Ignore intermediate folders
 intermediate/
