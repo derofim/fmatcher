@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 3.8.2)
 project(fmatcher)
-set(fmatcher_VERSION_MAJOR 0)
-set(fmatcher_VERSION_MINOR 1)
-set(fmatcher_VERSION_PATCH 0)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -25,3 +19,18 @@ endif()
 if( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
 	target_compile_options( fmatcher PRIVATE /W4 /WX )
 endif()
+
+#include(testRunner)
+
+# Force running test after build (after each change in source files)
+#add_custom_command(TARGET fmatcher
+#    POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E echo "Running POST_BUILD steps..."
+#)
+
+#add_dependencies(fmatcher MainTest)
+
+#add_test(NAME MyTest COMMAND MyTest)
+
+#enable_testing()
+#add_test(NAME fmatcher COMMAND fmatcher 100)

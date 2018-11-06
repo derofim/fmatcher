@@ -64,9 +64,7 @@ class Args {
 };
 
 struct OptValueBase {
-    virtual void setValue(const std::string& value) = 0;/* {
-        std::cout << "OptValueBase " << value << std::endl;
-    }*/
+    virtual void setValue(const std::string& value) = 0;
 };
 
 template<typename T>

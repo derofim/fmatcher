@@ -12,6 +12,20 @@ Some versions of bash may need escaping of "\":
 ./fmatcher -f "pattern/" -p "pattern\\"
 ```
 
+## Running unit tests
+
+Normal mode: print only on errors
+
+```bash
+cmake --build . --target TEST_check
+```
+
+Verbose mode: print all messages
+
+```bash
+cmake --build . --target TEST_check_verbose
+```
+
 ## Exit codes
 0 - match
 1 - don`t match
@@ -46,7 +60,7 @@ git submodule update --init --recursive
 ```bash
 mkdir out
 cd out
-cmake -DUSE_CPP17=ON ..
+cmake clean ..
 cmake --build .
 ```
 
