@@ -3,15 +3,16 @@ project (TEST)
 
 include_directories (
     ${TEST_SOURCE_DIR}/src # https://cmake.org/cmake/help/v3.6/variable/PROJECT-NAME_SOURCE_DIR.html
+    ${TEST_SOURCE_DIR}
 )
 
-set(TEST_SOURCE_FILES
-    main.cpp
-)
+add_library(test_main OBJECT main.cpp)
 
-add_library(test_main OBJECT ${TEST_SOURCE_FILES})
+add_library(test_argparse OBJECT test_argparse.cpp)
 
-add_executable(MainTest argparse.test.cpp $<TARGET_OBJECTS:test_main>)
+add_executable(ArgparseTest $<TARGET_OBJECTS:test_argparse>)
+
+add_executable(MainTest $<TARGET_OBJECTS:test_main>)
 
 #add_dependencies(MainTest fmatcher)
 
@@ -20,6 +21,8 @@ add_executable(MainTest argparse.test.cpp $<TARGET_OBJECTS:test_main>)
 enable_testing()
 
 #add_test(NAME fmatcher1 COMMAND fmatcher 100)
+
+add_test(NAME ArgparseTest COMMAND ArgparseTest)
 
 add_test(NAME MainTest COMMAND MainTest)
 
@@ -35,8 +38,8 @@ add_custom_target(ctest-cleanup
 )
 
 # Force running test after build (after each change in source files)
-add_custom_command(TARGET MainTest
+add_custom_command(TARGET MainTest ArgparseTest
     POST_BUILD
     COMMAND  ${CMAKE_COMMAND} --build . --target ${PROJECT_NAME}_check_verbose
-    DEPENDS ogs vtkdiff ctest-cleanup
+    DEPENDS ctest-cleanup
 )

@@ -28,6 +28,8 @@
  * IN THE SOFTWARE.
  */
 
+#pragma once
+
 #include <ostream>
 #include <sstream>
 #include <vector>
@@ -39,20 +41,22 @@ class Args;
 class Opt;
 class Parser;
 
-class Args {
-  private:
-    std::string m_exeName;
+class Args
+{
+private:
+    std::string              m_exeName;
     std::vector<std::string> m_args;
 
-  public:
-    Args( int argc, char const* const* argv )
-        : m_exeName(argv[0]),
-            m_args(argv + 1, argv + argc) {}
+public:
+    Args(int argc, char const* const* argv)
+            : m_exeName(argv[0])
+            , m_args(argv + 1, argv + argc) {
+    }
 
-    Args( std::initializer_list<std::string> args )
-    :   m_exeName( *args.begin() ),
-        m_args( args.begin()+1, args.end() )
-    {}
+    Args(std::initializer_list<std::string> args)
+            : m_exeName(*args.begin())
+            , m_args(args.begin() + 1, args.end()) {
+    }
 
     std::string getExeName() const {
         return m_exeName;
@@ -63,37 +67,42 @@ class Args {
     }
 };
 
-struct OptValueBase {
+struct OptValueBase
+{
     virtual void setValue(const std::string& value) = 0;
 };
 
-template<typename T>
-struct OptValue : OptValueBase {
+template <typename T>
+struct OptValue : OptValueBase
+{
     T& m_value;
 
-    OptValue( T &val ) : m_value( val ) {}
+    OptValue(T& val)
+            : m_value(val) {
+    }
 
-    template<typename Type>
-    inline bool convertInto( const std::string& source, Type& target ) {
+    template <typename Type>
+    inline bool convertInto(const std::string& source, Type& target) {
         std::stringstream ss;
         ss << source;
         ss >> target;
-        if( ss.fail() )
+        if(ss.fail())
             return false;
         else
             return true;
     }
 
-    inline bool convertInto( const std::string& source, bool& target ) {
-        target = (source == "1") || (source == "y") || (source == "yes") || (source == "true") || (source == "on");
+    inline bool convertInto(const std::string& source, bool& target) {
+        target = (source == "1") || (source == "y") || (source == "yes") || (source == "true") ||
+                 (source == "on");
         return true;
     }
 
-   void setValue(const std::string& value) override {
+    void setValue(const std::string& value) override {
         //std::cout<<"OptValue " << value << std::endl;
-        T temp;
-        auto result = convertInto( value, temp );
-        if (!result) {
+        T    temp;
+        auto result = convertInto(value, temp);
+        if(!result) {
             std::cerr << "Error during type convertion" << std::endl;
             return;
         }
@@ -101,88 +110,92 @@ struct OptValue : OptValueBase {
     }
 };
 
-class Opt {
-  //private:
-  public:
-    std::vector<std::string> m_optNames;
+class Opt
+{
+    //private:
+public:
+    std::vector<std::string>      m_optNames;
     std::shared_ptr<OptValueBase> m_optValueRef;
-    std::string m_Title;
-  public:
-    template<typename T>
-    Opt(T& value, const std::string& name) 
-    : m_optValueRef(std::make_shared<OptValue<T>>(OptValue<T>(value))), m_Title(name)
-    {}
+    std::string                   m_Title;
 
-    Opt& operator[]( std::string const &optName ) {
-        m_optNames.push_back( optName );
+public:
+    template <typename T>
+    Opt(T& value, const std::string& name)
+            : m_optValueRef(std::make_shared<OptValue<T>>(OptValue<T>(value)))
+            , m_Title(name) {
+    }
+
+    Opt& operator[](std::string const& optName) {
+        m_optNames.push_back(optName);
         return *this;
     }
 
-    bool isMatch( const std::string& other ) const {
-        for( const auto &name : m_optNames ) {
-            if( name == other )
+    bool isMatch(const std::string& other) const {
+        for(const auto& name : m_optNames) {
+            if(name == other)
                 return true;
         }
         return false;
     }
 
-    void parse( Args args );
+    void parse(Args args);
 
-    Parser operator|( Opt const &other ) const;
+    Parser operator|(Opt const& other) const;
 };
 
-class Parser {
-  private:
+class Parser
+{
+private:
     std::vector<Opt> m_opts;
-  public:
+
+public:
     Parser(const Opt& opt) {
         m_opts.push_back(opt);
     }
 
-    Parser& operator|( Opt const &other ) {
+    Parser& operator|(Opt const& other) {
         m_opts.push_back(other);
         return *this;
     }
 
-    void debugprint()
-    {
+    void debugprint() {
         std::cout << std::endl;
-        for (const Opt& item : m_opts) {
+        for(const Opt& item : m_opts) {
             std::cout << std::endl;
             std::cout << item.m_Title << std::endl;
-            for (const std::string& alias : item.m_optNames) {
+            for(const std::string& alias : item.m_optNames) {
                 std::cout << alias << std::endl;
             }
-            
         }
     }
 
-    void parse( Args args ) {
+    void parse(Args args) {
         std::cout << std::endl;
         //for (const std::string& item : args.getArgs()) {
         const std::vector<std::string>& argsVec = args.getArgs();
-        for (size_t i = 0; i < argsVec.size(); i++) {
+        for(size_t i = 0; i < argsVec.size(); i++) {
             const std::string& item = argsVec.at(i);
             //std::cout << item << std::endl;
-            for (Opt& option : m_opts) {
-                if (option.isMatch(item)) {
+            for(Opt& option : m_opts) {
+                if(option.isMatch(item)) {
                     std::string argVal = "";
-                    if (i < argsVec.size() - 1) { //TODO: if not flag
+                    if(i < argsVec.size() - 1) { //TODO: if not flag
                         argVal = argsVec[i + 1];
                     }
                     option.m_optValueRef->setValue(argVal);
-                    std::cout << "=> " << option.m_Title << " : " << item << " : " << argVal << std::endl;
+                    std::cout << "=> " << option.m_Title << " : " << item << " : " << argVal
+                              << std::endl;
                 }
             }
         }
     }
 };
 
-Parser Opt::operator|( Opt const &other ) const {
+Parser Opt::operator|(Opt const& other) const {
     return Parser(*this) | other;
 }
 
-void Opt::parse( Args args ) {
+void Opt::parse(Args args) {
     return Parser(*this).parse(args);
 }
 
