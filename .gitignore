@@ -91,6 +91,7 @@
 !FAQ
 !VERSION
 !ChangeLog
+!CMakeLists.txt
 
 # Ignore Unix backup files
 *~
@@ -107,7 +108,6 @@ out
 /*.sln
 /*.xcodeproj
 /Makefile
-/CMakeLists.txt
 *.target.xml
 *.exe.config
 
